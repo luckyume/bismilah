@@ -1,21 +1,35 @@
 function ConvertHandler() {
   
-  this.getNum = function (input) {
-    const result = input.match(/^[\d/.]+/);
-    if (!result) return 1;
+ this.getNum = function (input) {
+  const result = input.match(/^[^a-zA-Z]+/);
 
-    const num = result[0];
-    const fractions = num.split('/');
+  if (!result) return 1;
 
-    if (fractions.length > 2) return 'invalid number';
+  const num = result[0];
 
-    if (fractions.length === 2) {
-      if (fractions[1].includes('/')) return 'invalid number';
-      return parseFloat(fractions[0]) / parseFloat(fractions[1]);
+  // invalid double fraction
+  if (num.split('/').length > 2) return 'invalid number';
+
+  // invalid multiple decimals
+  if ((num.match(/\./g) || []).length > 1 && !num.includes('/'))
+    return 'invalid number';
+
+  if (num.includes('/')) {
+    const [numerator, denominator] = num.split('/');
+
+    if (
+      (numerator.match(/\./g) || []).length > 1 ||
+      (denominator.match(/\./g) || []).length > 1
+    ) {
+      return 'invalid number';
     }
 
-    return parseFloat(num);
-  };
+    return parseFloat(numerator) / parseFloat(denominator);
+  }
+
+  return parseFloat(num);
+};
+
 
   this.getUnit = function (input) {
     const result = input.match(/[a-zA-Z]+$/);
